@@ -2,25 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 
 
-class App(tk.Tk):
-    """Основной класс приложения."""
-
-    def __init__(self):
-        """Инициализация основного окна приложения."""
-
-        super().__init__()
-
-        self.title('Free Music')
-        self.geometry('1080x720')
-        self.resizable(False, False)
-
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-
-        self.login_frame = LoginFrame(self)
-        self.login_frame.grid(row=0, column=0)
-
-
 class LoginFrame(ttk.Frame):
     """Виджет входа в аккаунт."""
 
@@ -30,6 +11,8 @@ class LoginFrame(ttk.Frame):
         super().__init__(container)
 
         padding = {'padx': 10, 'pady': 5}
+
+        self.app = container
 
         self.login_error = tk.StringVar()
         self.login_error_label = ttk.Label(self, textvariable=self.login_error, foreground='red')
@@ -51,7 +34,30 @@ class LoginFrame(ttk.Frame):
         self.password_entry = ttk.Entry(self.login_form, textvariable=self.password, show='*')
         self.password_entry.grid(row=1, column=1, **padding)
 
-        self.login_button = ttk.Button(self.login_form, text='Войти')
+        self.login_button = ttk.Button(self.login_form, text='Войти', command=self.attempt_login)
         self.login_button.grid(row=3, columnspan=2, **padding)
 
         self.login_form.pack()
+
+        self.sign_up_button = ttk.Button(self, text='Нет аккаунта? Зарегистрироваться.',
+                                         command=self.app.show_sign_up_frame)
+        self.sign_up_button.pack()
+
+    def reset(self) -> None:
+        """Очистка полей виджета."""
+
+        self.login_error.set('')
+        self.login_entry.delete(0, 'end')
+        self.password_entry.delete(0, 'end')
+
+    def attempt_login(self) -> None:
+        """Попытка входа в аккаунт."""
+
+        # # хеширование пароля
+        # password_hash_and_salt = str(bcrypt.hashpw(self.password.get().encode(), bcrypt.gensalt()))
+
+        success, message = self.app.session.login(self.login.get(), self.password.get())
+        if success:
+            self.app.show_main_frame()
+        else:
+            self.login_error.set(message)
