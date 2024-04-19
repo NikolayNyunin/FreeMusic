@@ -2,6 +2,7 @@ import tkinter as tk
 
 from session import MusicSession
 from gui.login_frame import LoginFrame
+from gui.sign_up_frame import SignUpFrame
 
 
 class App(tk.Tk):
@@ -23,6 +24,12 @@ class App(tk.Tk):
 
         self.login_frame = LoginFrame(self)
         self.login_frame.grid(row=0, column=0)
+        self.login_frame.configure(padding=200)  # TODO: find a better solution
+
+        self.sign_up_frame = SignUpFrame(self)
+        self.sign_up_frame.grid(row=0, column=0)
+
+        self.show_login_frame()
 
     def show_login_frame(self):
         """Отображение виджета входа в аккаунт."""
@@ -33,7 +40,8 @@ class App(tk.Tk):
     def show_sign_up_frame(self):
         """Отображение виджета создания аккаунта."""
 
-        # TODO: implement
+        self.sign_up_frame.reset()
+        self.sign_up_frame.tkraise()
 
     def show_main_frame(self):
         """Отображение основного виджета приложения."""

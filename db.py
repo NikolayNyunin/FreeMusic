@@ -15,7 +15,7 @@ class User(Base):
     login: Mapped[str] = mapped_column(String(50), unique=True)
     password_hash: Mapped[str] = mapped_column(String(63))
     username: Mapped[str] = mapped_column(String(50))
-    bio: Mapped[str] = mapped_column(String(500))
+    bio: Mapped[str] = mapped_column(String(500), nullable=True)
     created_at: Mapped[datetime] = mapped_column(insert_default=func.now())
 
     def __repr__(self):

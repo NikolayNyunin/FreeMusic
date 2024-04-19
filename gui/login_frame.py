@@ -47,15 +47,21 @@ class LoginFrame(ttk.Frame):
         """Очистка полей виджета."""
 
         self.login_error.set('')
-        self.login_entry.delete(0, 'end')
-        self.password_entry.delete(0, 'end')
+        self.login.set('')
+        self.password.set('')
 
     def attempt_login(self) -> None:
         """Попытка входа в аккаунт."""
 
-        # # хеширование пароля
-        # password_hash_and_salt = str(bcrypt.hashpw(self.password.get().encode(), bcrypt.gensalt()))
+        # первичная проверка правильности заполнения полей ввода
+        if self.login.get() == '':
+            self.login_error.set('Empty login field')
+            return
+        elif self.password.get() == '':
+            self.login_error.set('Empty password field')
+            return
 
+        # вход в аккаунт
         success, message = self.app.session.login(self.login.get(), self.password.get())
         if success:
             self.app.show_main_frame()
