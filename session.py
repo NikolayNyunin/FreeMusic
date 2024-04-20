@@ -17,6 +17,8 @@ class MusicSession:
 
         Base.metadata.create_all(self.engine)
 
+        self.user = None
+
     def login(self, login: str, password: str) -> (bool, str):
         """Вход в аккаунт."""
 
@@ -35,6 +37,9 @@ class MusicSession:
         if not bcrypt.checkpw(password.encode(), user.password_hash.encode()):
             return False, 'Wrong password'
 
+        # успешная попытка входа
+        # сохранение данных о текущем пользователе
+        self.user = user
         return True, 'Success'
 
     def sign_up(self, login: str, password: str, username: str, bio: str) -> (bool, str):
@@ -61,3 +66,8 @@ class MusicSession:
                 return False, 'The user with this login already exists'
             else:
                 return True, 'Success'
+
+    def log_out(self) -> None:
+        """Выход из аккаунта."""
+
+        self.user = None

@@ -3,6 +3,7 @@ import tkinter as tk
 from session import MusicSession
 from gui.login_frame import LoginFrame
 from gui.sign_up_frame import SignUpFrame
+from gui.main_frame import MainFrame
 
 
 class App(tk.Tk):
@@ -23,11 +24,14 @@ class App(tk.Tk):
         self.session = MusicSession()
 
         self.login_frame = LoginFrame(self)
-        self.login_frame.grid(row=0, column=0)
-        self.login_frame.configure(padding=200)  # TODO: find a better solution
+        self.login_frame.grid(row=0, column=0, sticky='nsew')
+        # self.login_frame.configure(padding=200)  # TODO: find a better solution
 
         self.sign_up_frame = SignUpFrame(self)
-        self.sign_up_frame.grid(row=0, column=0)
+        self.sign_up_frame.grid(row=0, column=0, sticky='nsew')
+
+        self.main_frame = MainFrame(self)
+        self.main_frame.grid(row=0, column=0, sticky='nsew')
 
         self.show_login_frame()
 
@@ -46,4 +50,5 @@ class App(tk.Tk):
     def show_main_frame(self):
         """Отображение основного виджета приложения."""
 
-        # TODO: implement
+        self.main_frame.reset()
+        self.main_frame.tkraise()
