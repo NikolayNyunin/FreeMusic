@@ -3,7 +3,7 @@ import tkinter as tk
 from session import MusicSession
 from gui.login_frame import LoginFrame
 from gui.sign_up_frame import SignUpFrame
-from gui.main_frame import MainFrame
+from gui.main_frame.main_frame import MainFrame
 
 
 class App(tk.Tk):

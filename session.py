@@ -1,10 +1,11 @@
 import sqlite3
+from typing import Sequence
 
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, delete
 from sqlalchemy.orm import Session
 import bcrypt
 
-from db import Base, User
+from db import Base, User, Artist
 
 
 class MusicSession:
@@ -61,7 +62,7 @@ class MusicSession:
             try:
                 session.add(user)
                 session.commit()
-            except sqlite3.IntegrityError:
+            except sqlite3.IntegrityError:  # TODO: catch other exceptions
                 session.rollback()
                 return False, 'The user with this login already exists'
             else:
@@ -71,3 +72,47 @@ class MusicSession:
         """Выход из аккаунта."""
 
         self.user = None
+
+    def add_artist(self, name: str, description: str) -> (bool, str):
+        """Добавление исполнителя."""
+
+        # TODO: проверка полномочий
+
+        # создание экземпляра класса исполнителя
+        artist = Artist(
+            name=name,
+            description=description
+        )
+
+        # попытка добавления исполнителя
+        with Session(self.engine) as session:
+            try:
+                session.add(artist)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                return False, e
+            else:
+                return True, 'Success'
+
+    def get_all_artists(self) -> Sequence[Artist]:
+        """Получение списка из всех исполнителей."""
+
+        with Session(self.engine) as session:
+            statement = select(Artist)
+            artists = session.scalars(statement).all()
+
+        return artists
+
+    def delete_artist(self, artist_id: int) -> (bool, str):
+        """Удаление исполнителя по ID."""
+
+        # TODO: проверка полномочий
+
+        # попытка удаления исполнителя
+        with Session(self.engine) as session:
+            statement = delete(Artist).where(Artist.id == artist_id)
+            session.execute(statement)
+            session.commit()
+
+        return True, 'Success'

@@ -98,7 +98,7 @@ class SignUpFrame(ttk.Frame):
             self.login.get(),
             self.password.get(),
             self.username.get(),
-            self.bio_entry.get('1.0', tk.END)
+            self.bio_entry.get('1.0', 'end')
         )
         if success:
             self.app.show_login_frame()

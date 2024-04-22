@@ -1,5 +1,7 @@
 from tkinter import ttk
 
+from gui.main_frame.artist_frame import ArtistFrame
+
 
 class MainFrame(ttk.Frame):
     """Основной виджет приложения."""
@@ -35,11 +37,22 @@ class MainFrame(ttk.Frame):
         self.genres_button = ttk.Button(self, text='Жанры', command=self.show_genres)
         self.genres_button.grid(row=0, column=3, **padding)
 
+        self.menu_buttons = [self.tracks_button, self.albums_button, self.artists_button, self.genres_button]
+
         self.account_button = ttk.Button(self, text='Аккаунт', command=self.show_account)
         self.account_button.grid(row=0, column=4, sticky='e', **padding)
 
         self.log_out_button = ttk.Button(self, text='Выйти', command=self.log_out)
         self.log_out_button.grid(row=0, column=5, sticky='w', **padding)
+
+        self.artist_frame = ArtistFrame(self)
+        self.artist_frame.grid(row=1, column=0, columnspan=6, sticky='nsew', **padding)
+
+    def enable_menu_buttons(self) -> None:
+        """Активация всех кнопок меню."""
+
+        for button in self.menu_buttons:
+            button.configure(state='normal')
 
     def reset(self) -> None:
         """Сброс состояния виджета."""
@@ -59,7 +72,15 @@ class MainFrame(ttk.Frame):
     def show_artists(self) -> None:
         """Отображение списка исполнителей."""
 
-        # TODO: implement
+        # включение всех кнопок меню
+        self.enable_menu_buttons()
+
+        # выключение нажатой кнопки
+        self.artists_button.configure(state='disabled')
+
+        # обновление и отображение виджета списка исполнителей
+        self.artist_frame.update()
+        self.artist_frame.tkraise()
 
     def show_genres(self) -> None:
         """Отображение списка жанров."""
