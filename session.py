@@ -68,6 +68,30 @@ class MusicSession:
             else:
                 return True, 'Success'
 
+    def edit_account(self, password: str = None, username: str = None,
+                     bio: str = None) -> (bool, str):
+        """Редактирование данных аккаунта."""
+
+        # попытка редактирования данных аккаунта
+        with Session(self.engine) as session:
+            try:
+                user = session.query(User).get(self.user.id)
+                if password is not None:
+                    # хеширование пароля
+                    password_hash_and_salt = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+                    user.password_hash = password_hash_and_salt
+                if username is not None:
+                    user.username = username
+                if bio is not None:
+                    user.bio = bio
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                return False, e
+            else:
+                self.user = session.scalars(select(User).where(User.id == user.id)).one()
+                return True, 'Success'
+
     def log_out(self) -> None:
         """Выход из аккаунта."""
 

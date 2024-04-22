@@ -1,6 +1,7 @@
 from tkinter import ttk
 
 from gui.main_frame.artist_frame import ArtistFrame
+from gui.main_frame.account_frame import AccountFrame
 
 
 class MainFrame(ttk.Frame):
@@ -37,16 +38,20 @@ class MainFrame(ttk.Frame):
         self.genres_button = ttk.Button(self, text='Жанры', command=self.show_genres)
         self.genres_button.grid(row=0, column=3, **padding)
 
-        self.menu_buttons = [self.tracks_button, self.albums_button, self.artists_button, self.genres_button]
-
         self.account_button = ttk.Button(self, text='Аккаунт', command=self.show_account)
         self.account_button.grid(row=0, column=4, sticky='e', **padding)
+
+        self.menu_buttons = [self.tracks_button, self.albums_button, self.artists_button,
+                             self.genres_button, self.account_button]
 
         self.log_out_button = ttk.Button(self, text='Выйти', command=self.log_out)
         self.log_out_button.grid(row=0, column=5, sticky='w', **padding)
 
         self.artist_frame = ArtistFrame(self)
         self.artist_frame.grid(row=1, column=0, columnspan=6, sticky='nsew', **padding)
+
+        self.account_frame = AccountFrame(self)
+        self.account_frame.grid(row=1, column=0, columnspan=6, sticky='nsew', **padding)
 
     def enable_menu_buttons(self) -> None:
         """Активация всех кнопок меню."""
@@ -90,7 +95,15 @@ class MainFrame(ttk.Frame):
     def show_account(self) -> None:
         """Отображение настроек аккаунта."""
 
-        # TODO: implement
+        # включение всех кнопок меню
+        self.enable_menu_buttons()
+
+        # выключение нажатой кнопки
+        self.account_button.configure(state='disabled')
+
+        # сброс и отображение виджета редактирования аккаунта
+        self.account_frame.reset()
+        self.account_frame.tkraise()
 
     def log_out(self) -> None:
         """Выход из аккаунта."""
