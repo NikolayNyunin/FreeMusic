@@ -2,7 +2,7 @@ import sqlite3
 from typing import Sequence
 from datetime import date
 
-from sqlalchemy import create_engine, select, delete
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 import bcrypt
 
@@ -137,11 +137,15 @@ class MusicSession:
 
         # попытка удаления альбома
         with Session(self.engine) as session:
-            statement = delete(Album).where(Album.id == album_id)
-            session.execute(statement)
-            session.commit()
-
-        return True, 'Success'
+            try:
+                album = session.query(Album).filter(Album.id == album_id).first()
+                session.delete(album)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                return False, e
+            else:
+                return True, 'Success'
 
     def add_artist(self, name: str, description: str) -> (bool, str):
         """Добавление исполнителя."""
@@ -190,11 +194,15 @@ class MusicSession:
 
         # попытка удаления исполнителя
         with Session(self.engine) as session:
-            statement = delete(Artist).where(Artist.id == artist_id)
-            session.execute(statement)
-            session.commit()
-
-        return True, 'Success'
+            try:
+                artist = session.query(Artist).filter(Artist.id == artist_id).first()
+                session.delete(artist)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                return False, e
+            else:
+                return True, 'Success'
 
     def add_genre(self, name: str) -> (bool, str):
         """Добавление жанра."""
@@ -231,8 +239,12 @@ class MusicSession:
 
         # попытка удаления жанра
         with Session(self.engine) as session:
-            statement = delete(Genre).where(Genre.id == genre_id)
-            session.execute(statement)
-            session.commit()
-
-        return True, 'Success'
+            try:
+                genre = session.query(Genre).filter(Genre.id == genre_id).first()
+                session.delete(genre)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                return False, e
+            else:
+                return True, 'Success'

@@ -69,7 +69,7 @@ class Album(Base):
     artist_id: Mapped[int] = mapped_column(ForeignKey('artist.id'))
     artist: Mapped['Artist'] = relationship(back_populates='albums')
 
-    tracks: Mapped[List['Track']] = relationship(back_populates='album')
+    tracks: Mapped[List['Track']] = relationship(back_populates='album', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Album {self.name} by {self.artist}>'
@@ -85,7 +85,7 @@ class Artist(Base):
     description: Mapped[str] = mapped_column(String(1000))
     created_at: Mapped[datetime] = mapped_column(insert_default=func.now())
 
-    albums: Mapped[List['Album']] = relationship(back_populates='artist')
+    albums: Mapped[List['Album']] = relationship(back_populates='artist', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Artist {self.name}>'
