@@ -1,11 +1,12 @@
 import sqlite3
 from typing import Sequence
+from datetime import date
 
 from sqlalchemy import create_engine, select, delete
 from sqlalchemy.orm import Session
 import bcrypt
 
-from db import Base, User, Artist, Genre
+from db import Base, User, Album, Artist, Genre
 
 
 class MusicSession:
@@ -97,6 +98,51 @@ class MusicSession:
 
         self.user = None
 
+    def add_album(self, name: str, release_date: date, artist_id: int) -> (bool, str):
+        """Добавление альбома."""
+
+        # TODO: проверка полномочий
+
+        # создание экземпляра класса альбома
+        album = Album(
+            name=name,
+            release_date=release_date,
+            artist_id=artist_id
+        )
+
+        # попытка добавления исполнителя
+        with Session(self.engine) as session:
+            try:
+                session.add(album)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                return False, e
+            else:
+                return True, 'Success'
+
+    def get_all_albums(self) -> Sequence[Album]:
+        """Получение списка из всех альбомов."""
+
+        with Session(self.engine) as session:
+            statement = select(Album)
+            albums = session.scalars(statement).all()
+
+        return albums
+
+    def delete_album(self, album_id: int) -> (bool, str):
+        """Удаление альбома по ID."""
+
+        # TODO: проверка полномочий
+
+        # попытка удаления альбома
+        with Session(self.engine) as session:
+            statement = delete(Album).where(Album.id == album_id)
+            session.execute(statement)
+            session.commit()
+
+        return True, 'Success'
+
     def add_artist(self, name: str, description: str) -> (bool, str):
         """Добавление исполнителя."""
 
@@ -127,6 +173,15 @@ class MusicSession:
             artists = session.scalars(statement).all()
 
         return artists
+
+    def get_artist(self, artist_id: int) -> Artist:
+        """Получение исполнителя по ID."""
+
+        with Session(self.engine) as session:
+            statement = select(Artist).where(Artist.id == artist_id)
+            artist = session.scalars(statement).one()
+
+        return artist
 
     def delete_artist(self, artist_id: int) -> (bool, str):
         """Удаление исполнителя по ID."""

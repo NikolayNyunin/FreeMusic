@@ -1,5 +1,6 @@
 from tkinter import ttk
 
+from gui.main_frame.album_frame import AlbumFrame
 from gui.main_frame.artist_frame import ArtistFrame
 from gui.main_frame.genre_frame import GenreFrame
 from gui.main_frame.account_frame import AccountFrame
@@ -48,6 +49,9 @@ class MainFrame(ttk.Frame):
         self.log_out_button = ttk.Button(self, text='Выйти', command=self.log_out)
         self.log_out_button.grid(row=0, column=5, sticky='w', **padding)
 
+        self.album_frame = AlbumFrame(self)
+        self.album_frame.grid(row=1, column=0, columnspan=6, sticky='nsew', **padding)
+
         self.artist_frame = ArtistFrame(self)
         self.artist_frame.grid(row=1, column=0, columnspan=6, sticky='nsew', **padding)
 
@@ -76,7 +80,15 @@ class MainFrame(ttk.Frame):
     def show_albums(self) -> None:
         """Отображение списка альбомов."""
 
-        # TODO: implement
+        # включение всех кнопок меню
+        self.enable_menu_buttons()
+
+        # выключение нажатой кнопки
+        self.albums_button.configure(state='disabled')
+
+        # обновление и отображение виджета списка альбомов
+        self.album_frame.update()
+        self.album_frame.tkraise()
 
     def show_artists(self) -> None:
         """Отображение списка исполнителей."""

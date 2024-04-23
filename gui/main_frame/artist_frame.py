@@ -77,7 +77,7 @@ class ArtistFrame(ttk.Frame):
 
 
 class AddArtistWindow(tk.Toplevel):
-    """Окно добавления исполнителей."""
+    """Окно добавления исполнителя."""
 
     def __init__(self, parent):
         """Инициализация окна."""
@@ -93,7 +93,7 @@ class AddArtistWindow(tk.Toplevel):
 
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=5)
-        self.rowconfigure(3, weight=1)
+        self.rowconfigure(2, weight=1)
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
@@ -112,7 +112,7 @@ class AddArtistWindow(tk.Toplevel):
         self.artist_description_entry = tk.Text(self, width=40, height=8)
         self.artist_description_entry.grid(row=1, column=1, columnspan=2, **padding)
 
-        self.add_artist_button = ttk.Button(self, text='Создать исполнителя', command=self.add_artist)
+        self.add_artist_button = ttk.Button(self, text='Добавить исполнителя', command=self.add_artist)
         self.add_artist_button.grid(row=2, column=0, columnspan=3, **padding)
 
     def add_artist(self):

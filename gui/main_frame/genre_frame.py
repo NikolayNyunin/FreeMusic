@@ -101,7 +101,7 @@ class AddGenreWindow(tk.Toplevel):
         self.genre_name_entry = ttk.Entry(self, textvariable=self.genre_name)
         self.genre_name_entry.grid(row=0, column=1, **padding)
 
-        self.add_genre_button = ttk.Button(self, text='Создать жанр', command=self.add_genre)
+        self.add_genre_button = ttk.Button(self, text='Добавить жанр', command=self.add_genre)
         self.add_genre_button.grid(row=1, column=0, columnspan=2, **padding)
 
     def add_genre(self):
