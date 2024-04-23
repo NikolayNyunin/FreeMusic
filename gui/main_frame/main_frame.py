@@ -1,6 +1,7 @@
 from tkinter import ttk
 
 from gui.main_frame.artist_frame import ArtistFrame
+from gui.main_frame.genre_frame import GenreFrame
 from gui.main_frame.account_frame import AccountFrame
 
 
@@ -50,6 +51,9 @@ class MainFrame(ttk.Frame):
         self.artist_frame = ArtistFrame(self)
         self.artist_frame.grid(row=1, column=0, columnspan=6, sticky='nsew', **padding)
 
+        self.genre_frame = GenreFrame(self)
+        self.genre_frame.grid(row=1, column=0, columnspan=6, sticky='nsew', **padding)
+
         self.account_frame = AccountFrame(self)
         self.account_frame.grid(row=1, column=0, columnspan=6, sticky='nsew', **padding)
 
@@ -90,7 +94,15 @@ class MainFrame(ttk.Frame):
     def show_genres(self) -> None:
         """Отображение списка жанров."""
 
-        # TODO: implement
+        # включение всех кнопок меню
+        self.enable_menu_buttons()
+
+        # выключение нажатой кнопки
+        self.genres_button.configure(state='disabled')
+
+        # обновление и отображение виджета списка жанров
+        self.genre_frame.update()
+        self.genre_frame.tkraise()
 
     def show_account(self) -> None:
         """Отображение настроек аккаунта."""

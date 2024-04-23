@@ -36,10 +36,10 @@ class ArtistFrame(ttk.Frame):
             artist_frame = ttk.Frame(self)
 
             name_label = ttk.Label(artist_frame, text=artist.name)
-            name_label.grid(row=0, column=0)
+            name_label.grid(row=0, column=0, **self.padding)
 
             description_label = ttk.Label(artist_frame, text=artist.description)
-            description_label.grid(row=0, column=1)
+            description_label.grid(row=0, column=1, **self.padding)
 
             # if self.session.user is not None:
             #     if self.session.user.is_admin:

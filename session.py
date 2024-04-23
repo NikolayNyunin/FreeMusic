@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, select, delete
 from sqlalchemy.orm import Session
 import bcrypt
 
-from db import Base, User, Artist
+from db import Base, User, Artist, Genre
 
 
 class MusicSession:
@@ -136,6 +136,47 @@ class MusicSession:
         # попытка удаления исполнителя
         with Session(self.engine) as session:
             statement = delete(Artist).where(Artist.id == artist_id)
+            session.execute(statement)
+            session.commit()
+
+        return True, 'Success'
+
+    def add_genre(self, name: str) -> (bool, str):
+        """Добавление жанра."""
+
+        # TODO: проверка полномочий
+
+        # создание экземпляра класса жанра
+        genre = Genre(name=name)
+
+        # попытка добавления жанра
+        with Session(self.engine) as session:
+            try:
+                session.add(genre)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                return False, e
+            else:
+                return True, 'Success'
+
+    def get_all_genres(self) -> Sequence[Genre]:
+        """Получение списка из всех жанров."""
+
+        with Session(self.engine) as session:
+            statement = select(Genre)
+            genres = session.scalars(statement).all()
+
+        return genres
+
+    def delete_genre(self, genre_id: int) -> (bool, str):
+        """Удаление жанра по ID."""
+
+        # TODO: проверка полномочий
+
+        # попытка удаления жанра
+        with Session(self.engine) as session:
+            statement = delete(Genre).where(Genre.id == genre_id)
             session.execute(statement)
             session.commit()
 
