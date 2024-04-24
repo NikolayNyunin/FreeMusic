@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import showerror
 
 
 class LoginFrame(ttk.Frame):
@@ -13,10 +14,6 @@ class LoginFrame(ttk.Frame):
         padding = {'padx': 10, 'pady': 5}
 
         self.app = container
-
-        self.login_error = tk.StringVar()
-        self.login_error_label = ttk.Label(self, textvariable=self.login_error, foreground='red')
-        self.login_error_label.pack()
 
         self.login_form = ttk.Frame(self)
 
@@ -46,7 +43,6 @@ class LoginFrame(ttk.Frame):
     def reset(self) -> None:
         """Очистка полей виджета."""
 
-        self.login_error.set('')
         self.login.set('')
         self.password.set('')
 
@@ -55,10 +51,10 @@ class LoginFrame(ttk.Frame):
 
         # первичная проверка правильности заполнения полей ввода
         if self.login.get() == '':
-            self.login_error.set('Empty login field')
+            showerror(title='Ошибка входа', message='Поле логина не заполнено')
             return
         elif self.password.get() == '':
-            self.login_error.set('Empty password field')
+            showerror(title='Ошибка входа', message='Поле пароля не заполнено')
             return
 
         # вход в аккаунт
@@ -66,4 +62,4 @@ class LoginFrame(ttk.Frame):
         if success:
             self.app.show_main_frame()
         else:
-            self.login_error.set(message)
+            showerror(title='Ошибка входа', message=message)

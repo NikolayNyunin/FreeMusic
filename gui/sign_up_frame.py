@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import showinfo, showerror
 
 
 class SignUpFrame(ttk.Frame):
@@ -13,10 +14,6 @@ class SignUpFrame(ttk.Frame):
         padding = {'padx': 10, 'pady': 5}
 
         self.app = container
-
-        self.sign_up_error = tk.StringVar()
-        self.sign_up_error_label = ttk.Label(self, textvariable=self.sign_up_error, foreground='red')
-        self.sign_up_error_label.pack()
 
         self.sign_up_form = ttk.Frame(self)
 
@@ -66,7 +63,6 @@ class SignUpFrame(ttk.Frame):
     def reset(self) -> None:
         """Очистка полей виджета."""
 
-        self.sign_up_error.set('')
         self.login.set('')
         self.password.set('')
         self.password_repeat.set('')
@@ -78,19 +74,19 @@ class SignUpFrame(ttk.Frame):
 
         # первичная проверка правильности заполнения полей ввода
         if self.login.get() == '':
-            self.sign_up_error.set('Empty login field')
+            showerror(title='Ошибка регистрации', message='Поле логина не заполнено')
             return
         elif self.password.get() == '':
-            self.sign_up_error.set('Empty password field')
+            showerror(title='Ошибка регистрации', message='Поле пароля не заполнено')
             return
         elif self.password_repeat.get() == '':
-            self.sign_up_error.set('Empty password repeat field')
+            showerror(title='Ошибка регистрации', message='Поле повтора пароля не заполнено')
             return
         elif self.password.get() != self.password_repeat.get():
-            self.sign_up_error.set('Passwords do not match')
+            showerror(title='Ошибка регистрации', message='Пароли не совпадают')
             return
         elif self.username.get() == '':
-            self.sign_up_error.set('Empty username field')
+            showerror(title='Ошибка регистрации', message='Поле имени пользователя не заполнено')
             return
 
         # регистрация нового аккаунта
@@ -102,5 +98,6 @@ class SignUpFrame(ttk.Frame):
         )
         if success:
             self.app.show_login_frame()
+            showinfo(title='Успех', message='Регистрация прошла успешно')
         else:
-            self.sign_up_error.set(message)
+            showerror(title='Ошибка регистрации', message=message)
