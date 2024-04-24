@@ -27,10 +27,11 @@ class AlbumFrame(ttk.Frame):
 
         # если пользователь администратор
         # создание кнопки добавления альбома
-        # if self.session.user is not None:
-        #     if self.session.user.is_admin:
-        self.add_album_button = ttk.Button(self, text='Добавить альбом', command=self.show_add_album_window)
-        self.add_album_button.pack(side='top', **self.padding)
+        if self.session.user is not None:
+            if self.session.user.is_admin:
+                self.add_album_button = ttk.Button(self, text='Добавить альбом',
+                                                   command=self.show_add_album_window)
+                self.add_album_button.pack(side='top', **self.padding)
 
         # отображение списка альбомов
         for album in self.session.get_all_albums():
@@ -45,11 +46,11 @@ class AlbumFrame(ttk.Frame):
             artist_name_label = ttk.Label(album_frame, text=self.session.get_artist(album.artist_id).name)
             artist_name_label.grid(row=0, column=2)
 
-            # if self.session.user is not None:
-            #     if self.session.user.is_admin:
-            delete_button = ttk.Button(album_frame, text='Удалить',
-                                       command=lambda album_id=album.id: self.delete_album(album_id))
-            delete_button.grid(row=0, column=3, **self.padding)
+            if self.session.user is not None:
+                if self.session.user.is_admin:
+                    delete_button = ttk.Button(album_frame, text='Удалить',
+                                               command=lambda album_id=album.id: self.delete_album(album_id))
+                    delete_button.grid(row=0, column=3, **self.padding)
 
             album_frame.pack(side='top', **self.padding)
 

@@ -26,10 +26,11 @@ class GenreFrame(ttk.Frame):
 
         # если пользователь администратор
         # создание кнопки добавления жанра
-        # if self.session.user is not None:
-        #     if self.session.user.is_admin:
-        self.add_genre_button = ttk.Button(self, text='Добавить жанр', command=self.show_add_genre_window)
-        self.add_genre_button.pack(side='top', **self.padding)
+        if self.session.user is not None:
+            if self.session.user.is_admin:
+                self.add_genre_button = ttk.Button(self, text='Добавить жанр',
+                                                   command=self.show_add_genre_window)
+                self.add_genre_button.pack(side='top', **self.padding)
 
         # отображение списка жанров
         for genre in self.session.get_all_genres():
@@ -38,11 +39,11 @@ class GenreFrame(ttk.Frame):
             name_label = ttk.Label(genre_frame, text=genre.name)
             name_label.grid(row=0, column=0, **self.padding)
 
-            # if self.session.user is not None:
-            #     if self.session.user.is_admin:
-            delete_button = ttk.Button(genre_frame, text='Удалить',
-                                       command=lambda genre_id=genre.id: self.delete_genre(genre_id))
-            delete_button.grid(row=0, column=2, **self.padding)
+            if self.session.user is not None:
+                if self.session.user.is_admin:
+                    delete_button = ttk.Button(genre_frame, text='Удалить',
+                                               command=lambda genre_id=genre.id: self.delete_genre(genre_id))
+                    delete_button.grid(row=0, column=2, **self.padding)
 
             genre_frame.pack(side='top', **self.padding)
 

@@ -101,7 +101,8 @@ class MusicSession:
     def add_album(self, name: str, release_date: date, artist_id: int) -> (bool, str):
         """Добавление альбома."""
 
-        # TODO: проверка полномочий
+        if self.user is None or not self.user.is_admin:
+            return False, 'Отказано в доступе'
 
         # создание экземпляра класса альбома
         album = Album(
@@ -133,7 +134,8 @@ class MusicSession:
     def delete_album(self, album_id: int) -> (bool, str):
         """Удаление альбома по ID."""
 
-        # TODO: проверка полномочий
+        if self.user is None or not self.user.is_admin:
+            return False, 'Отказано в доступе'
 
         # попытка удаления альбома
         with Session(self.engine) as session:
@@ -150,7 +152,8 @@ class MusicSession:
     def add_artist(self, name: str, description: str) -> (bool, str):
         """Добавление исполнителя."""
 
-        # TODO: проверка полномочий
+        if self.user is None or not self.user.is_admin:
+            return False, 'Отказано в доступе'
 
         # создание экземпляра класса исполнителя
         artist = Artist(
@@ -190,7 +193,8 @@ class MusicSession:
     def delete_artist(self, artist_id: int) -> (bool, str):
         """Удаление исполнителя по ID."""
 
-        # TODO: проверка полномочий
+        if self.user is None or not self.user.is_admin:
+            return False, 'Отказано в доступе'
 
         # попытка удаления исполнителя
         with Session(self.engine) as session:
@@ -207,7 +211,8 @@ class MusicSession:
     def add_genre(self, name: str) -> (bool, str):
         """Добавление жанра."""
 
-        # TODO: проверка полномочий
+        if self.user is None or not self.user.is_admin:
+            return False, 'Отказано в доступе'
 
         # создание экземпляра класса жанра
         genre = Genre(name=name)
@@ -235,7 +240,8 @@ class MusicSession:
     def delete_genre(self, genre_id: int) -> (bool, str):
         """Удаление жанра по ID."""
 
-        # TODO: проверка полномочий
+        if self.user is None or not self.user.is_admin:
+            return False, 'Отказано в доступе'
 
         # попытка удаления жанра
         with Session(self.engine) as session:

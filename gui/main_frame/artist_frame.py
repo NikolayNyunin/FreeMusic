@@ -26,10 +26,11 @@ class ArtistFrame(ttk.Frame):
 
         # если пользователь администратор
         # создание кнопки добавления исполнителя
-        # if self.session.user is not None:
-        #     if self.session.user.is_admin:
-        self.add_artist_button = ttk.Button(self, text='Добавить исполнителя', command=self.show_add_artist_window)
-        self.add_artist_button.pack(side='top', **self.padding)
+        if self.session.user is not None:
+            if self.session.user.is_admin:
+                self.add_artist_button = ttk.Button(self, text='Добавить исполнителя',
+                                                    command=self.show_add_artist_window)
+                self.add_artist_button.pack(side='top', **self.padding)
 
         # отображение списка исполнителей
         for artist in self.session.get_all_artists():
@@ -41,11 +42,11 @@ class ArtistFrame(ttk.Frame):
             description_label = ttk.Label(artist_frame, text=artist.description)
             description_label.grid(row=0, column=1, **self.padding)
 
-            # if self.session.user is not None:
-            #     if self.session.user.is_admin:
-            delete_button = ttk.Button(artist_frame, text='Удалить',
-                                       command=lambda artist_id=artist.id: self.delete_artist(artist_id))
-            delete_button.grid(row=0, column=2, **self.padding)
+            if self.session.user is not None:
+                if self.session.user.is_admin:
+                    delete_button = ttk.Button(artist_frame, text='Удалить',
+                                               command=lambda artist_id=artist.id: self.delete_artist(artist_id))
+                    delete_button.grid(row=0, column=2, **self.padding)
 
             artist_frame.pack(side='top', **self.padding)
 
