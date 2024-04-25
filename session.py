@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 import bcrypt
 
-from db import Base, User, Album, Artist, Genre
+from db import Base, User, Track, Album, Artist, Genre
 
 
 class MusicSession:
@@ -98,6 +98,60 @@ class MusicSession:
 
         self.user = None
 
+    def add_track(self, name: str, audio_id: str, album_id: int, genre_ids: tuple[int]) -> (bool, str):
+        """Добавление композиции."""
+
+        if self.user is None or not self.user.is_admin:
+            return False, 'Отказано в доступе'
+
+        # создание экземпляра класса композиции
+        track = Track(
+            name=name,
+            audio_id=audio_id,
+            album_id=album_id
+        )
+
+        for genre_id in genre_ids:
+            track.genres[genre_id] = self.get_genre(genre_id)
+
+        # попытка добавления композиции
+        with Session(self.engine) as session:
+            try:
+                session.add(track)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                return False, e
+            else:
+                return True, 'Success'
+
+    def get_all_tracks(self) -> Sequence[Track]:
+        """Получение списка из всех композиций."""
+
+        with Session(self.engine) as session:
+            statement = select(Track)
+            tracks = session.scalars(statement).all()
+
+        return tracks
+
+    def delete_track(self, track_id: int) -> (bool, str):
+        """Удаление композиции по ID."""
+
+        if self.user is None or not self.user.is_admin:
+            return False, 'Отказано в доступе'
+
+        # попытка удаления композиции
+        with Session(self.engine) as session:
+            try:
+                track = session.query(Track).filter(Track.id == track_id).first()
+                session.delete(track)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                return False, e
+            else:
+                return True, 'Success'
+
     def add_album(self, name: str, release_date: date, artist_id: int) -> (bool, str):
         """Добавление альбома."""
 
@@ -111,7 +165,7 @@ class MusicSession:
             artist_id=artist_id
         )
 
-        # попытка добавления исполнителя
+        # попытка добавления альбома
         with Session(self.engine) as session:
             try:
                 session.add(album)
@@ -130,6 +184,24 @@ class MusicSession:
             albums = session.scalars(statement).all()
 
         return albums
+
+    def get_albums(self, artist_id: int) -> Sequence[Album]:
+        """Получение списка из альбомов исполнителя по его ID."""
+
+        with Session(self.engine) as session:
+            statement = select(Artist).where(Artist.id == artist_id)
+            albums = session.scalars(statement).one().albums
+
+        return albums
+
+    def get_album(self, album_id: int) -> Album:
+        """Получение альбома по ID."""
+
+        with Session(self.engine) as session:
+            statement = select(Album).where(Album.id == album_id)
+            album = session.scalars(statement).one()
+
+        return album
 
     def delete_album(self, album_id: int) -> (bool, str):
         """Удаление альбома по ID."""
@@ -236,6 +308,15 @@ class MusicSession:
             genres = session.scalars(statement).all()
 
         return genres
+
+    def get_genre(self, genre_id: int) -> Genre:
+        """Получение жанра по ID."""
+
+        with Session(self.engine) as session:
+            statement = select(Genre).where(Genre.id == genre_id)
+            genre = session.scalars(statement).one()
+
+        return genre
 
     def delete_genre(self, genre_id: int) -> (bool, str):
         """Удаление жанра по ID."""
