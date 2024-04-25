@@ -112,7 +112,7 @@ class MusicSession:
         )
 
         for genre_id in genre_ids:
-            track.genres[genre_id] = self.get_genre(genre_id)
+            track.genres.append(self.get_genre(genre_id))
 
         # попытка добавления композиции
         with Session(self.engine) as session:
@@ -308,6 +308,16 @@ class MusicSession:
             genres = session.scalars(statement).all()
 
         return genres
+
+    def get_genres(self, track_id: int) -> Sequence[Genre]:
+        """Получение списка из жанров композиции по её ID."""
+
+        with Session(self.engine) as session:
+            statement = select(Track).where(Track.id == track_id)
+            genres = session.scalars(statement).one().genres
+
+        return genres
+
 
     def get_genre(self, genre_id: int) -> Genre:
         """Получение жанра по ID."""

@@ -48,13 +48,17 @@ class TrackFrame(ttk.Frame):
             album_name_label = ttk.Label(track_frame, text=album.name)
             album_name_label.grid(row=0, column=2)
 
-            # TODO: add genres and audio
+            # TODO: add audio
+
+            genres_text = '\n'.join([g.name for g in self.session.get_genres(track.id)])
+            genres_label = ttk.Label(track_frame, text=genres_text)
+            genres_label.grid(row=0, column=3)
 
             if self.session.user is not None:
                 if self.session.user.is_admin:
                     delete_button = ttk.Button(track_frame, text='Удалить',
                                                command=lambda track_id=track.id: self.delete_track(track_id))
-                    delete_button.grid(row=0, column=3, **self.padding)
+                    delete_button.grid(row=0, column=4, **self.padding)
 
             track_frame.pack(side='top', **self.padding)
 
@@ -97,7 +101,7 @@ class AddTrackWindow(tk.Toplevel):
 
         self.parent = parent
 
-        self.geometry('540x280')
+        self.geometry('540x360')
         self.title('Добавление альбома')
 
         self.rowconfigure(0, weight=2)
@@ -105,7 +109,8 @@ class AddTrackWindow(tk.Toplevel):
         self.rowconfigure(2, weight=1)
         self.rowconfigure(3, weight=2)
         self.rowconfigure(4, weight=2)
-        self.rowconfigure(5, weight=2)
+        self.rowconfigure(5, weight=5)
+        self.rowconfigure(6, weight=2)
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
@@ -158,10 +163,23 @@ class AddTrackWindow(tk.Toplevel):
                                                 values=album_names)
         self.album_name_combobox.grid(row=4, column=1, **padding)
 
-        # TODO: add genre selection
+        self.genres = self.parent.session.get_all_genres()
+        if len(self.genres) != 0:
+            self.genres_label = ttk.Label(self, text='Жанры:')
+            self.genres_label.grid(row=5, column=0, **padding)
+
+            self.genres_frame = ttk.Frame(self)
+
+            self.selected_genres = [tk.BooleanVar() for _ in self.genres]
+            for i, genre in enumerate(self.genres):
+                genre_checkbutton = ttk.Checkbutton(self.genres_frame, text=genre.name,
+                                                    variable=self.selected_genres[i])
+                genre_checkbutton.pack(side='top')
+
+            self.genres_frame.grid(row=5, column=1, **padding)
 
         self.add_track_button = ttk.Button(self, text='Добавить композицию', command=self.add_track)
-        self.add_track_button.grid(row=5, column=0, columnspan=2, **padding)
+        self.add_track_button.grid(row=6, column=0, columnspan=2, **padding)
 
     def select_audio_file(self):
         """Выбор аудиофайла композиции."""
@@ -191,11 +209,16 @@ class AddTrackWindow(tk.Toplevel):
 
         # TODO: save audio
 
+        if len(self.genres) != 0:
+            genre_ids = [self.genres[i].id for i in range(len(self.genres)) if self.selected_genres[i].get()]
+        else:
+            genre_ids = []
+
         success, message = self.parent.session.add_track(
             self.track_name.get(),
             '0' * 24,
             self.album_ids[self.album_name_combobox.current()],
-            []
+            genre_ids
         )
         if success:
             self.parent.update()
