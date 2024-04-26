@@ -5,6 +5,9 @@ from datetime import date
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 import bcrypt
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+from gridfs import GridFS, GridOut
 
 from db import Base, User, Track, Album, Artist, Genre
 
@@ -18,6 +21,10 @@ class MusicSession:
         self.engine = create_engine('sqlite:///music.db', echo=True)
 
         Base.metadata.create_all(self.engine)
+
+        mongo_client = MongoClient()
+        mongo_db = mongo_client['music_db']
+        self.grid_fs = GridFS(mongo_db)
 
         self.user = None
 
@@ -98,11 +105,14 @@ class MusicSession:
 
         self.user = None
 
-    def add_track(self, name: str, audio_id: str, album_id: int, genre_ids: tuple[int]) -> (bool, str):
+    def add_track(self, name: str, audio_file_path: str, album_id: int, genre_ids: tuple[int]) -> (bool, str):
         """Добавление композиции."""
 
         if self.user is None or not self.user.is_admin:
             return False, 'Отказано в доступе'
+
+        # сохранение аудиофайла в MongoDB GridFS
+        audio_id = self.save_audio_file(audio_file_path)
 
         # создание экземпляра класса композиции
         track = Track(
@@ -125,6 +135,21 @@ class MusicSession:
             else:
                 return True, 'Success'
 
+    def save_audio_file(self, audio_file_path: str) -> str:
+        """Сохранение аудиофайла и возвращение его _id в MongoDB."""
+
+        filename = audio_file_path.split('/')[-1]
+
+        with open(audio_file_path, 'rb') as audio_file:
+            audio_file_id = self.grid_fs.put(audio_file, filename=filename)
+
+        return str(audio_file_id)
+
+    def get_audio_file(self, audio_file_id: str) -> GridOut:
+        """Получение аудиофайла по его _id в MongoDB."""
+
+        return self.grid_fs.get(ObjectId(audio_file_id))
+
     def get_all_tracks(self) -> Sequence[Track]:
         """Получение списка из всех композиций."""
 
@@ -144,6 +169,7 @@ class MusicSession:
         with Session(self.engine) as session:
             try:
                 track = session.query(Track).filter(Track.id == track_id).first()
+                self.grid_fs.delete(track.audio_id)  # удаление аудиофайла из MongoDB
                 session.delete(track)
                 session.commit()
             except Exception as e:
