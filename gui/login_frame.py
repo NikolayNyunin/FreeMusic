@@ -53,8 +53,14 @@ class LoginFrame(ttk.Frame):
         if self.login.get() == '':
             showerror(title='Ошибка входа', message='Поле логина не заполнено')
             return
+        elif len(self.login.get()) < 4 or len(self.login.get()) > 50:
+            showerror(title='Ошибка входа', message='Недопустимая длина логина')
+            return
         elif self.password.get() == '':
             showerror(title='Ошибка входа', message='Поле пароля не заполнено')
+            return
+        elif len(self.password.get()) < 4 or len(self.password.get()) > 50:
+            showerror(title='Ошибка входа', message='Недопустимая длина пароля')
             return
 
         # вход в аккаунт

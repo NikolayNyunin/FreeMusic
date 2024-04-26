@@ -136,6 +136,16 @@ class AddAlbumWindow(tk.Toplevel):
     def add_album(self):
         """Добавление альбома."""
 
+        if self.album_name.get() == '':
+            showerror(title='Ошибка добавления альбома', message='Поле названия альбома не заполнено')
+            return
+        elif len(self.album_name.get()) < 4 or len(self.album_name.get()) > 50:
+            showerror(title='Ошибка добавления альбома', message='Недопустимая длина названия альбома')
+            return
+        elif self.artist_name_combobox.current() == -1:
+            showerror(title='Ошибка добавления альбома', message='Исполнитель не выбран')
+            return
+
         success, message = self.parent.session.add_album(
             self.album_name.get(),
             self.release_date_entry.get_date(),

@@ -108,6 +108,13 @@ class AddGenreWindow(tk.Toplevel):
     def add_genre(self):
         """Добавление жанра."""
 
+        if self.genre_name.get() == '':
+            showerror(title='Ошибка добавления жанра', message='Поле названия жанра не заполнено')
+            return
+        elif len(self.genre_name.get()) < 3 or len(self.genre_name.get()) > 50:
+            showerror(title='Ошибка добавления жанра', message='Недопустимая длина названия жанра')
+            return
+
         success, message = self.parent.session.add_genre(self.genre_name.get())
         if success:
             self.parent.update()

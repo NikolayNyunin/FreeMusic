@@ -209,6 +209,22 @@ class AddTrackWindow(tk.Toplevel):
     def add_track(self):
         """Добавление композиции."""
 
+        if self.track_name.get() == '':
+            showerror(title='Ошибка добавления композиции', message='Поле названия композиции не заполнено')
+            return
+        elif len(self.track_name.get()) < 4 or len(self.track_name.get()) > 50:
+            showerror(title='Ошибка добавления композиции', message='Недопустимая длина названия композиции')
+            return
+        elif len(self.filename.get()) == 0:
+            showerror(title='Ошибка добавления композиции', message='Аудиофайл не выбран')
+            return
+        elif self.artist_name_combobox.current() == -1:
+            showerror(title='Ошибка добавления композиции', message='Исполнитель не выбран')
+            return
+        elif self.album_name_combobox.current() == -1:
+            showerror(title='Ошибка добавления композиции', message='Альбом не выбран')
+            return
+
         if len(self.genres) != 0:
             genre_ids = [self.genres[i].id for i in range(len(self.genres)) if self.selected_genres[i].get()]
         else:

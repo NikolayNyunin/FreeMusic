@@ -38,18 +38,18 @@ class MusicSession:
 
         # если пользователь с данным логином не найден
         if len(users) == 0:
-            return False, 'Wrong login'
+            return False, 'Неверный логин'
 
         user = users[0]
 
         # проверка совпадения пароля
         if not bcrypt.checkpw(password.encode(), user.password_hash.encode()):
-            return False, 'Wrong password'
+            return False, 'Неверный пароль'
 
         # успешная попытка входа
         # сохранение данных о текущем пользователе
         self.user = user
-        return True, 'Success'
+        return True, 'Успех'
 
     def sign_up(self, login: str, password: str, username: str, bio: str) -> (bool, str):
         """Создание нового аккаунта."""
@@ -70,11 +70,11 @@ class MusicSession:
             try:
                 session.add(user)
                 session.commit()
-            except sqlite3.IntegrityError:  # TODO: catch other exceptions
+            except sqlite3.IntegrityError:
                 session.rollback()
-                return False, 'The user with this login already exists'
+                return False, 'Пользователь с данным логином уже существует'
             else:
-                return True, 'Success'
+                return True, 'Успех'
 
     def edit_account(self, password: str = None, username: str = None,
                      bio: str = None) -> (bool, str):
@@ -98,7 +98,7 @@ class MusicSession:
                 return False, e
             else:
                 self.user = session.scalars(select(User).where(User.id == user.id)).one()
-                return True, 'Success'
+                return True, 'Успех'
 
     def log_out(self) -> None:
         """Выход из аккаунта."""
@@ -133,7 +133,7 @@ class MusicSession:
                 session.rollback()
                 return False, e
             else:
-                return True, 'Success'
+                return True, 'Успех'
 
     def save_audio_file(self, audio_file_path: str) -> str:
         """Сохранение аудиофайла и возвращение его _id в MongoDB."""
@@ -176,7 +176,7 @@ class MusicSession:
                 session.rollback()
                 return False, e
             else:
-                return True, 'Success'
+                return True, 'Успех'
 
     def add_album(self, name: str, release_date: date, artist_id: int) -> (bool, str):
         """Добавление альбома."""
@@ -200,7 +200,7 @@ class MusicSession:
                 session.rollback()
                 return False, e
             else:
-                return True, 'Success'
+                return True, 'Успех'
 
     def get_all_albums(self) -> Sequence[Album]:
         """Получение списка из всех альбомов."""
@@ -245,7 +245,7 @@ class MusicSession:
                 session.rollback()
                 return False, e
             else:
-                return True, 'Success'
+                return True, 'Успех'
 
     def add_artist(self, name: str, description: str) -> (bool, str):
         """Добавление исполнителя."""
@@ -268,7 +268,7 @@ class MusicSession:
                 session.rollback()
                 return False, e
             else:
-                return True, 'Success'
+                return True, 'Успех'
 
     def get_all_artists(self) -> Sequence[Artist]:
         """Получение списка из всех исполнителей."""
@@ -304,7 +304,7 @@ class MusicSession:
                 session.rollback()
                 return False, e
             else:
-                return True, 'Success'
+                return True, 'Успех'
 
     def add_genre(self, name: str) -> (bool, str):
         """Добавление жанра."""
@@ -324,7 +324,7 @@ class MusicSession:
                 session.rollback()
                 return False, e
             else:
-                return True, 'Success'
+                return True, 'Успех'
 
     def get_all_genres(self) -> Sequence[Genre]:
         """Получение списка из всех жанров."""
@@ -343,7 +343,6 @@ class MusicSession:
             genres = session.scalars(statement).one().genres
 
         return genres
-
 
     def get_genre(self, genre_id: int) -> Genre:
         """Получение жанра по ID."""
@@ -370,4 +369,4 @@ class MusicSession:
                 session.rollback()
                 return False, e
             else:
-                return True, 'Success'
+                return True, 'Успех'

@@ -119,6 +119,16 @@ class AddArtistWindow(tk.Toplevel):
     def add_artist(self):
         """Добавление исполнителя."""
 
+        if self.artist_name.get() == '':
+            showerror(title='Ошибка добавления исполнителя', message='Поле названия исполнителя не заполнено')
+            return
+        elif len(self.artist_name.get()) < 4 or len(self.artist_name.get()) > 50:
+            showerror(title='Ошибка добавления исполнителя', message='Недопустимая длина названия исполнителя')
+            return
+        elif len(self.artist_description_entry.get('1.0', 'end')) > 1000:
+            showerror(title='Ошибка добавления исполнителя', message='Недопустимая длина описания/биографии')
+            return
+
         success, message = self.parent.session.add_artist(
             self.artist_name.get(),
             self.artist_description_entry.get('1.0', 'end')

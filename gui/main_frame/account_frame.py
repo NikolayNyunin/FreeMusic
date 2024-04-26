@@ -81,14 +81,27 @@ class AccountFrame(ttk.Frame):
 
         if self.password.get() != '' or self.password_repeat.get() != '':
             if self.password.get() != self.password_repeat.get():
-                showerror(title='Ошибка', message='Пароли не совпадают')
+                showerror(title='Ошибка редактирования аккаунта', message='Пароли не совпадают')
                 return
+            elif len(self.password.get()) < 4 or len(self.password.get()) > 50:
+                showerror(title='Ошибка редактирования аккаунта', message='Недопустимая длина пароля')
+                return
+
             password = self.password.get()
 
-        if self.username.get() != self.session.user.username:
+        if self.username.get() == '':
+            showerror(title='Ошибка редактирования аккаунта', message='Поле имени пользователя не заполнено')
+            return
+        elif len(self.username.get()) < 4 or len(self.username.get()) > 50:
+            showerror(title='Ошибка редактирования аккаунта', message='Недопустимая длина имени пользователя')
+            return
+        elif self.username.get() != self.session.user.username:
             username = self.username.get()
 
-        if self.bio_entry.get('1.0', 'end') != self.session.user.bio:
+        if len(self.bio_entry.get('1.0', 'end')) > 1000:
+            showerror(title='Ошибка редактирования аккаунта', message='Недопустимая длина биографии')
+            return
+        elif self.bio_entry.get('1.0', 'end') != self.session.user.bio:
             bio = self.bio_entry.get('1.0', 'end')
 
         success, message = self.session.edit_account(password, username, bio)

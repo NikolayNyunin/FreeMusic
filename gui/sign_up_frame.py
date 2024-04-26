@@ -76,6 +76,9 @@ class SignUpFrame(ttk.Frame):
         if self.login.get() == '':
             showerror(title='Ошибка регистрации', message='Поле логина не заполнено')
             return
+        elif len(self.login.get()) < 4 or len(self.login.get()) > 50:
+            showerror(title='Ошибка регистрации', message='Недопустимая длина логина')
+            return
         elif self.password.get() == '':
             showerror(title='Ошибка регистрации', message='Поле пароля не заполнено')
             return
@@ -85,8 +88,14 @@ class SignUpFrame(ttk.Frame):
         elif self.password.get() != self.password_repeat.get():
             showerror(title='Ошибка регистрации', message='Пароли не совпадают')
             return
+        elif len(self.password.get()) < 4 or len(self.password.get()) > 50:
+            showerror(title='Ошибка регистрации', message='Недопустимая длина пароля')
+            return
         elif self.username.get() == '':
             showerror(title='Ошибка регистрации', message='Поле имени пользователя не заполнено')
+            return
+        elif len(self.username.get()) < 4 or len(self.username.get()) > 50:
+            showerror(title='Ошибка регистрации', message='Недопустимая длина имени пользователя')
             return
 
         # регистрация нового аккаунта
