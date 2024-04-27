@@ -13,9 +13,11 @@ class GenreFrame(ttk.Frame):
 
         self.padding = {'padx': 10, 'pady': 10}
 
-        self.session = container.app.session
+        self.app = container.app
+        self.session = self.app.session
 
         self.add_genre_button = None
+        self.no_genres_label = None
 
     def update(self) -> None:
         """Обновление состояния виджета."""
@@ -32,9 +34,20 @@ class GenreFrame(ttk.Frame):
                                                    command=self.show_add_genre_window)
                 self.add_genre_button.pack(side='top', **self.padding)
 
+        # получение списка добавленных жанров
+        genres = self.session.get_all_genres()
+
+        if len(genres) == 0:  # если пока не добавлено ни одного жанра
+            self.no_genres_label = ttk.Label(self, text='Пока не добавлено ни одного жанра',
+                                             font='Helvetica 16')
+            self.no_genres_label.pack(pady=(150, 0))
+
         # отображение списка жанров
-        for genre in self.session.get_all_genres():
+        for genre in genres:
             genre_frame = ttk.Frame(self)
+
+            genre_frame.columnconfigure(0, weight=2)
+            genre_frame.columnconfigure(1, weight=1)
 
             name_label = ttk.Label(genre_frame, text=genre.name)
             name_label.grid(row=0, column=0, **self.padding)
@@ -43,7 +56,7 @@ class GenreFrame(ttk.Frame):
                 if self.session.user.is_admin:
                     delete_button = ttk.Button(genre_frame, text='Удалить',
                                                command=lambda genre_id=genre.id: self.delete_genre(genre_id))
-                    delete_button.grid(row=0, column=2, **self.padding)
+                    delete_button.grid(row=0, column=1, **self.padding)
 
             genre_frame.pack(side='top', **self.padding)
 
@@ -86,7 +99,7 @@ class AddGenreWindow(tk.Toplevel):
 
         self.parent = parent
 
-        self.geometry('360x120')
+        self.geometry('420x120')
         self.title('Добавление жанра')
 
         self.rowconfigure(0, weight=1)
@@ -99,7 +112,8 @@ class AddGenreWindow(tk.Toplevel):
         self.genre_name_label.grid(row=0, column=0, **padding)
 
         self.genre_name = tk.StringVar()
-        self.genre_name_entry = ttk.Entry(self, textvariable=self.genre_name)
+        self.genre_name_entry = ttk.Entry(self, textvariable=self.genre_name,
+                                          font=self.parent.app.FONT, width=25)
         self.genre_name_entry.grid(row=0, column=1, **padding)
 
         self.add_genre_button = ttk.Button(self, text='Добавить жанр', command=self.add_genre)

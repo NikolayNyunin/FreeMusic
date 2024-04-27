@@ -14,9 +14,11 @@ class TrackFrame(ttk.Frame):
 
         self.padding = {'padx': 10, 'pady': 10}
 
-        self.session = container.app.session
+        self.app = container.app
+        self.session = self.app.session
 
         self.add_track_button = None
+        self.no_tracks_label = None
 
     def update(self) -> None:
         """Обновление состояния виджета."""
@@ -33,9 +35,24 @@ class TrackFrame(ttk.Frame):
                                                    command=self.show_add_track_window)
                 self.add_track_button.pack(side='top', **self.padding)
 
+        # получение списка добавленных композиций
+        tracks = self.session.get_all_tracks()
+
+        if len(tracks) == 0:  # если пока не добавлено ни одной композиции
+            self.no_tracks_label = ttk.Label(self, text='Пока не добавлено ни одной композиции',
+                                             font='Helvetica 16')
+            self.no_tracks_label.pack(pady=(150, 0))
+
         # отображение списка композиций
-        for track in self.session.get_all_tracks():
+        for track in tracks:
             track_frame = ttk.Frame(self)
+
+            track_frame.columnconfigure(0, weight=2)
+            track_frame.columnconfigure(1, weight=2)
+            track_frame.columnconfigure(2, weight=2)
+            track_frame.columnconfigure(3, weight=2)
+            track_frame.columnconfigure(4, weight=2)
+            track_frame.columnconfigure(5, weight=1)
 
             name_label = ttk.Label(track_frame, text=track.name)
             name_label.grid(row=0, column=0)
@@ -62,7 +79,7 @@ class TrackFrame(ttk.Frame):
                                                command=lambda track_id=track.id: self.delete_track(track_id))
                     delete_button.grid(row=0, column=5, **self.padding)
 
-            track_frame.pack(side='top', **self.padding)
+            track_frame.pack(side='top', fill='x', **self.padding)
 
     def show_add_track_window(self) -> None:
         """Отображение окна добавления композиции."""
@@ -121,7 +138,8 @@ class AddTrackWindow(tk.Toplevel):
         self.track_name_label.grid(row=0, column=0, **padding)
 
         self.track_name = tk.StringVar()
-        self.track_name_entry = ttk.Entry(self, textvariable=self.track_name)
+        self.track_name_entry = ttk.Entry(self, textvariable=self.track_name,
+                                          font=self.parent.app.FONT, width=25)
         self.track_name_entry.grid(row=0, column=1, **padding)
 
         self.audio_input_label = ttk.Label(self, text='Аудиофайл:')
@@ -143,8 +161,8 @@ class AddTrackWindow(tk.Toplevel):
         self.artist_ids = tuple([a.id for a in artists])
 
         self.artist_name = tk.StringVar()
-        self.artist_name_combobox = ttk.Combobox(self, textvariable=self.artist_name,
-                                                 values=artist_names, )
+        self.artist_name_combobox = ttk.Combobox(self, textvariable=self.artist_name, values=artist_names,
+                                                 state='readonly', font=self.parent.app.FONT, width=25)
         self.artist_name_combobox.bind('<<ComboboxSelected>>', self.update_albums)
         self.artist_name_combobox.grid(row=3, column=1, **padding)
 
@@ -161,8 +179,8 @@ class AddTrackWindow(tk.Toplevel):
         self.album_ids = tuple([a.id for a in albums])
 
         self.album_name = tk.StringVar()
-        self.album_name_combobox = ttk.Combobox(self, textvariable=self.album_name,
-                                                values=album_names)
+        self.album_name_combobox = ttk.Combobox(self, textvariable=self.album_name, values=album_names,
+                                                state='readonly', font=self.parent.app.FONT, width=25)
         self.album_name_combobox.grid(row=4, column=1, **padding)
 
         self.genres = self.parent.session.get_all_genres()

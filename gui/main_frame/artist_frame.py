@@ -13,9 +13,11 @@ class ArtistFrame(ttk.Frame):
 
         self.padding = {'padx': 10, 'pady': 10}
 
-        self.session = container.app.session
+        self.app = container.app
+        self.session = self.app.session
 
         self.add_artist_button = None
+        self.no_artists_label = None
 
     def update(self) -> None:
         """Обновление состояния виджета."""
@@ -32,9 +34,21 @@ class ArtistFrame(ttk.Frame):
                                                     command=self.show_add_artist_window)
                 self.add_artist_button.pack(side='top', **self.padding)
 
+        # получение списка добавленных исполнителей
+        artists = self.session.get_all_artists()
+
+        if len(artists) == 0:  # если пока не добавлено ни одного исполнителя
+            self.no_artists_label = ttk.Label(self, text='Пока не добавлено ни одного исполнителя',
+                                              font='Helvetica 16')
+            self.no_artists_label.pack(pady=(150, 0))
+
         # отображение списка исполнителей
-        for artist in self.session.get_all_artists():
+        for artist in artists:
             artist_frame = ttk.Frame(self)
+
+            artist_frame.columnconfigure(0, weight=2)
+            artist_frame.columnconfigure(1, weight=2)
+            artist_frame.columnconfigure(2, weight=1)
 
             name_label = ttk.Label(artist_frame, text=artist.name)
             name_label.grid(row=0, column=0, **self.padding)
@@ -48,7 +62,7 @@ class ArtistFrame(ttk.Frame):
                                                command=lambda artist_id=artist.id: self.delete_artist(artist_id))
                     delete_button.grid(row=0, column=2, **self.padding)
 
-            artist_frame.pack(side='top', **self.padding)
+            artist_frame.pack(side='top', fill='x', **self.padding)
 
     def show_add_artist_window(self) -> None:
         """Отображение окна добавления исполнителя."""
@@ -89,7 +103,7 @@ class AddArtistWindow(tk.Toplevel):
 
         self.parent = parent
 
-        self.geometry('540x280')
+        self.geometry('580x280')
         self.title('Добавление исполнителя')
 
         self.rowconfigure(0, weight=1)
@@ -104,13 +118,14 @@ class AddArtistWindow(tk.Toplevel):
         self.artist_name_label.grid(row=0, column=0, columnspan=2, **padding)
 
         self.artist_name = tk.StringVar()
-        self.artist_name_entry = ttk.Entry(self, textvariable=self.artist_name)
+        self.artist_name_entry = ttk.Entry(self, textvariable=self.artist_name,
+                                           font=self.parent.app.FONT, width=25)
         self.artist_name_entry.grid(row=0, column=2, **padding)
 
         self.artist_description_label = ttk.Label(self, text='Описание/биография:')
         self.artist_description_label.grid(row=1, column=0, **padding)
 
-        self.artist_description_entry = tk.Text(self, width=40, height=8)
+        self.artist_description_entry = tk.Text(self, font=self.parent.app.FONT, width=40, height=8)
         self.artist_description_entry.grid(row=1, column=1, columnspan=2, **padding)
 
         self.add_artist_button = ttk.Button(self, text='Добавить исполнителя', command=self.add_artist)

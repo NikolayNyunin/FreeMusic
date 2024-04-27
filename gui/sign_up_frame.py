@@ -11,7 +11,7 @@ class SignUpFrame(ttk.Frame):
 
         super().__init__(container)
 
-        padding = {'padx': 10, 'pady': 5}
+        padding = {'padx': 20, 'pady': 10}
 
         self.app = container
 
@@ -21,40 +21,44 @@ class SignUpFrame(ttk.Frame):
         self.login_label.grid(row=0, column=0, **padding)
 
         self.login = tk.StringVar()
-        self.login_entry = ttk.Entry(self.sign_up_form, textvariable=self.login)
+        self.login_entry = ttk.Entry(self.sign_up_form, textvariable=self.login,
+                                     font=self.app.FONT, width=20)
         self.login_entry.grid(row=0, column=1, **padding)
 
         self.password_label = ttk.Label(self.sign_up_form, text='Пароль:')
         self.password_label.grid(row=1, column=0, **padding)
 
         self.password = tk.StringVar()
-        self.password_entry = ttk.Entry(self.sign_up_form, textvariable=self.password, show='*')
+        self.password_entry = ttk.Entry(self.sign_up_form, textvariable=self.password,
+                                        show='*', font=self.app.FONT, width=20)
         self.password_entry.grid(row=1, column=1, **padding)
 
         self.password_repeat_label = ttk.Label(self.sign_up_form, text='Повторите пароль:')
         self.password_repeat_label.grid(row=2, column=0, **padding)
 
         self.password_repeat = tk.StringVar()
-        self.password_repeat_entry = ttk.Entry(self.sign_up_form, textvariable=self.password_repeat, show='*')
+        self.password_repeat_entry = ttk.Entry(self.sign_up_form, textvariable=self.password_repeat,
+                                               show='*', font=self.app.FONT, width=20)
         self.password_repeat_entry.grid(row=2, column=1, **padding)
 
         self.username_label = ttk.Label(self.sign_up_form, text='Имя пользователя:')
         self.username_label.grid(row=3, column=0, **padding)
 
         self.username = tk.StringVar()
-        self.username_entry = ttk.Entry(self.sign_up_form, textvariable=self.username)
+        self.username_entry = ttk.Entry(self.sign_up_form, textvariable=self.username,
+                                        font=self.app.FONT, width=20)
         self.username_entry.grid(row=3, column=1, **padding)
 
         self.bio_label = ttk.Label(self.sign_up_form, text='Биография:')
         self.bio_label.grid(row=4, column=0, **padding)
 
-        self.bio_entry = tk.Text(self.sign_up_form, width=40, height=5)
+        self.bio_entry = tk.Text(self.sign_up_form, width=30, height=8, font=self.app.FONT)
         self.bio_entry.grid(row=4, column=1, **padding)
 
         self.sign_up_button = ttk.Button(self.sign_up_form, text='Зарегистрироваться', command=self.attempt_sign_up)
         self.sign_up_button.grid(row=5, columnspan=2, **padding)
 
-        self.sign_up_form.pack()
+        self.sign_up_form.pack(pady=(120, 0))
 
         self.login_button = ttk.Button(self, text='Уже есть аккаунт? Войти.',
                                        command=self.app.show_login_frame)

@@ -13,7 +13,8 @@ class AccountFrame(ttk.Frame):
 
         padding = {'padx': 10, 'pady': 10}
 
-        self.session = container.app.session
+        self.app = container.app
+        self.session = self.app.session
 
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
@@ -24,45 +25,46 @@ class AccountFrame(ttk.Frame):
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
-        self.columnconfigure(2, weight=1)
 
         self.login_label = ttk.Label(self, text='Логин:')
-        self.login_label.grid(row=0, column=0, columnspan=2, **padding)
+        self.login_label.grid(row=0, column=0, **padding)
 
         self.login = tk.StringVar()
-        self.login_entry = ttk.Entry(self, textvariable=self.login)
+        self.login_entry = ttk.Entry(self, textvariable=self.login, font=self.app.FONT, width=20)
         self.login_entry.configure(state='disabled')
-        self.login_entry.grid(row=0, column=2, **padding)
+        self.login_entry.grid(row=0, column=1, **padding)
 
         self.password_label = ttk.Label(self, text='Пароль:')
-        self.password_label.grid(row=1, column=0, columnspan=2, **padding)
+        self.password_label.grid(row=1, column=0, **padding)
 
         self.password = tk.StringVar()
-        self.password_entry = ttk.Entry(self, textvariable=self.password, show='*')
-        self.password_entry.grid(row=1, column=2, **padding)
+        self.password_entry = ttk.Entry(self, textvariable=self.password,
+                                        show='*', font=self.app.FONT, width=20)
+        self.password_entry.grid(row=1, column=1, **padding)
 
         self.password_repeat_label = ttk.Label(self, text='Повторите пароль:')
-        self.password_repeat_label.grid(row=2, column=0, columnspan=2, **padding)
+        self.password_repeat_label.grid(row=2, column=0, **padding)
 
         self.password_repeat = tk.StringVar()
-        self.password_repeat_entry = ttk.Entry(self, textvariable=self.password_repeat, show='*')
-        self.password_repeat_entry.grid(row=2, column=2, **padding)
+        self.password_repeat_entry = ttk.Entry(self, textvariable=self.password_repeat,
+                                               show='*', font=self.app.FONT, width=20)
+        self.password_repeat_entry.grid(row=2, column=1, **padding)
 
         self.username_label = ttk.Label(self, text='Имя пользователя:')
-        self.username_label.grid(row=3, column=0, columnspan=2, **padding)
+        self.username_label.grid(row=3, column=0, **padding)
 
         self.username = tk.StringVar()
-        self.username_entry = ttk.Entry(self, textvariable=self.username)
-        self.username_entry.grid(row=3, column=2, **padding)
+        self.username_entry = ttk.Entry(self, textvariable=self.username, font=self.app.FONT, width=20)
+        self.username_entry.grid(row=3, column=1, **padding)
 
         self.bio_label = ttk.Label(self, text='Биография:')
         self.bio_label.grid(row=4, column=0, **padding)
 
-        self.bio_entry = tk.Text(self, width=40, height=5)
-        self.bio_entry.grid(row=4, column=1, columnspan=2, **padding)
+        self.bio_entry = tk.Text(self, font=self.app.FONT, width=40, height=8)
+        self.bio_entry.grid(row=4, column=1, **padding)
 
         self.save_button = ttk.Button(self, text='Сохранить', command=self.save_changes)
-        self.save_button.grid(row=5, column=0, columnspan=3, **padding)
+        self.save_button.grid(row=5, column=0, columnspan=2, **padding)
 
     def reset(self) -> None:
         """Сброс состояния виджета."""

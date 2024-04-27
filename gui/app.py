@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 
 from session import MusicSession
 from gui.login_frame import LoginFrame
@@ -8,6 +9,8 @@ from gui.main_frame.main_frame import MainFrame
 
 class App(tk.Tk):
     """Основной класс приложения."""
+
+    FONT = 'Helvetica 12'
 
     def __init__(self):
         """Инициализация основного окна приложения."""
@@ -25,13 +28,14 @@ class App(tk.Tk):
 
         self.login_frame = LoginFrame(self)
         self.login_frame.grid(row=0, column=0, sticky='nsew')
-        # self.login_frame.configure(padding=200)  # TODO: find a better solution
 
         self.sign_up_frame = SignUpFrame(self)
         self.sign_up_frame.grid(row=0, column=0, sticky='nsew')
 
         self.main_frame = MainFrame(self)
         self.main_frame.grid(row=0, column=0, sticky='nsew')
+
+        self.configure_style()
 
         self.show_login_frame()
 
@@ -52,3 +56,11 @@ class App(tk.Tk):
 
         self.main_frame.reset()
         self.main_frame.tkraise()
+
+    def configure_style(self):
+        """Настройка стиля приложения."""
+
+        style = ttk.Style(self)
+        style.configure('TLabel', font=self.FONT)
+        style.configure('TButton', font=self.FONT)
+        style.configure('TCheckbutton', font=self.FONT)
