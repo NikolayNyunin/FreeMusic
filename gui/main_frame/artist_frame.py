@@ -11,13 +11,14 @@ class ArtistFrame(ttk.Frame):
 
         super().__init__(container)
 
-        self.padding = {'padx': 10, 'pady': 10}
+        self.padding = {'padx': 10, 'pady': 20}
 
         self.app = container.app
         self.session = self.app.session
 
         self.add_artist_button = None
         self.no_artists_label = None
+        self.artists_frame = None
 
     def update(self) -> None:
         """Обновление состояния виджета."""
@@ -26,14 +27,6 @@ class ArtistFrame(ttk.Frame):
         for child in self.winfo_children():
             child.destroy()
 
-        # если пользователь администратор
-        # создание кнопки добавления исполнителя
-        if self.session.user is not None:
-            if self.session.user.is_admin:
-                self.add_artist_button = ttk.Button(self, text='Добавить исполнителя',
-                                                    command=self.show_add_artist_window)
-                self.add_artist_button.pack(side='top', **self.padding)
-
         # получение списка добавленных исполнителей
         artists = self.session.get_all_artists()
 
@@ -41,28 +34,45 @@ class ArtistFrame(ttk.Frame):
             self.no_artists_label = ttk.Label(self, text='Пока не добавлено ни одного исполнителя',
                                               font='Helvetica 16')
             self.no_artists_label.pack(pady=(150, 0))
+        else:  # заполнение шапки таблицы
+            self.artists_frame = ttk.Frame(self)
+
+            self.artists_frame.columnconfigure(0, weight=2)
+            self.artists_frame.columnconfigure(1, weight=2)
+            self.artists_frame.columnconfigure(2, weight=1)
+
+            name_label = ttk.Label(self.artists_frame, text='Название', font=self.app.HEADER_FONT)
+            name_label.grid(row=0, column=0)
+
+            description_label = ttk.Label(self.artists_frame, text='Описание/биография', font=self.app.HEADER_FONT)
+            description_label.grid(row=0, column=1)
+
+            self.artists_frame.pack(side='top', fill='x', **self.padding)
 
         # отображение списка исполнителей
-        for artist in artists:
-            artist_frame = ttk.Frame(self)
+        for i, artist in enumerate(artists):
+            separator = ttk.Separator(self.artists_frame, orient='horizontal')
+            separator.grid(row=2 * i + 1, column=0, columnspan=3, sticky='nsew', pady=10)
 
-            artist_frame.columnconfigure(0, weight=2)
-            artist_frame.columnconfigure(1, weight=2)
-            artist_frame.columnconfigure(2, weight=1)
+            name_label = ttk.Label(self.artists_frame, text=artist.name)
+            name_label.grid(row=2 * i + 2, column=0)
 
-            name_label = ttk.Label(artist_frame, text=artist.name)
-            name_label.grid(row=0, column=0, **self.padding)
-
-            description_label = ttk.Label(artist_frame, text=artist.description)
-            description_label.grid(row=0, column=1, **self.padding)
+            description_label = ttk.Label(self.artists_frame, text=artist.description.strip('\n'), justify='center')
+            description_label.grid(row=2 * i + 2, column=1)
 
             if self.session.user is not None:
                 if self.session.user.is_admin:
-                    delete_button = ttk.Button(artist_frame, text='Удалить',
+                    delete_button = ttk.Button(self.artists_frame, image=self.app.delete_image,
                                                command=lambda artist_id=artist.id: self.delete_artist(artist_id))
-                    delete_button.grid(row=0, column=2, **self.padding)
+                    delete_button.grid(row=2 * i + 2, column=2)
 
-            artist_frame.pack(side='top', fill='x', **self.padding)
+        # если пользователь администратор
+        # создание кнопки добавления исполнителя
+        if self.session.user is not None:
+            if self.session.user.is_admin:
+                self.add_artist_button = ttk.Button(self, image=self.app.add_image,
+                                                    command=self.show_add_artist_window)
+                self.add_artist_button.pack(side='top', **self.padding)
 
     def show_add_artist_window(self) -> None:
         """Отображение окна добавления исполнителя."""

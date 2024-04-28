@@ -12,13 +12,14 @@ class TrackFrame(ttk.Frame):
 
         super().__init__(container)
 
-        self.padding = {'padx': 10, 'pady': 10}
+        self.padding = {'padx': 10, 'pady': 20}
 
         self.app = container.app
         self.session = self.app.session
 
         self.add_track_button = None
         self.no_tracks_label = None
+        self.tracks_frame = None
 
     def update(self) -> None:
         """Обновление состояния виджета."""
@@ -27,14 +28,6 @@ class TrackFrame(ttk.Frame):
         for child in self.winfo_children():
             child.destroy()
 
-        # если пользователь администратор
-        # создание кнопки добавления композиции
-        if self.session.user is not None:
-            if self.session.user.is_admin:
-                self.add_track_button = ttk.Button(self, text='Добавить композицию',
-                                                   command=self.show_add_track_window)
-                self.add_track_button.pack(side='top', **self.padding)
-
         # получение списка добавленных композиций
         tracks = self.session.get_all_tracks()
 
@@ -42,44 +35,72 @@ class TrackFrame(ttk.Frame):
             self.no_tracks_label = ttk.Label(self, text='Пока не добавлено ни одной композиции',
                                              font='Helvetica 16')
             self.no_tracks_label.pack(pady=(150, 0))
+        else:  # заполнение шапки таблицы
+            self.tracks_frame = ttk.Frame(self)
+
+            self.tracks_frame.columnconfigure(0, weight=2)
+            self.tracks_frame.columnconfigure(1, weight=2)
+            self.tracks_frame.columnconfigure(2, weight=2)
+            self.tracks_frame.columnconfigure(3, weight=2)
+            self.tracks_frame.columnconfigure(4, weight=2)
+            self.tracks_frame.columnconfigure(5, weight=1)
+
+            name_label = ttk.Label(self.tracks_frame, text='Название', font=self.app.HEADER_FONT)
+            name_label.grid(row=0, column=0)
+
+            artist_name_label = ttk.Label(self.tracks_frame, text='Исполнитель', font=self.app.HEADER_FONT)
+            artist_name_label.grid(row=0, column=1)
+
+            album_name_label = ttk.Label(self.tracks_frame, text='Альбом', font=self.app.HEADER_FONT)
+            album_name_label.grid(row=0, column=2)
+
+            genres_label = ttk.Label(self.tracks_frame, text='Жанры', font=self.app.HEADER_FONT)
+            genres_label.grid(row=0, column=3)
+
+            filename_label = ttk.Label(self.tracks_frame, text='Файл', font=self.app.HEADER_FONT)
+            filename_label.grid(row=0, column=4)
+
+            self.tracks_frame.pack(side='top', fill='x', **self.padding)
 
         # отображение списка композиций
-        for track in tracks:
-            track_frame = ttk.Frame(self)
+        for i, track in enumerate(tracks):
+            separator = ttk.Separator(self.tracks_frame, orient='horizontal')
+            separator.grid(row=2 * i + 1, column=0, columnspan=6, sticky='nsew', pady=10)
 
-            track_frame.columnconfigure(0, weight=2)
-            track_frame.columnconfigure(1, weight=2)
-            track_frame.columnconfigure(2, weight=2)
-            track_frame.columnconfigure(3, weight=2)
-            track_frame.columnconfigure(4, weight=2)
-            track_frame.columnconfigure(5, weight=1)
-
-            name_label = ttk.Label(track_frame, text=track.name)
-            name_label.grid(row=0, column=0)
+            name_label = ttk.Label(self.tracks_frame, text=track.name)
+            name_label.grid(row=2 * i + 2, column=0)
 
             album = self.session.get_album(track.album_id)
 
-            artist_name_label = ttk.Label(track_frame, text=self.session.get_artist(album.artist_id).name)
-            artist_name_label.grid(row=0, column=1)
+            artist_name_label = ttk.Label(self.tracks_frame, text=self.session.get_artist(album.artist_id).name)
+            artist_name_label.grid(row=2 * i + 2, column=1)
 
-            album_name_label = ttk.Label(track_frame, text=album.name)
-            album_name_label.grid(row=0, column=2)
+            album_name_label = ttk.Label(self.tracks_frame, text=album.name)
+            album_name_label.grid(row=2 * i + 2, column=2)
 
             genres_text = '\n'.join([g.name for g in self.session.get_genres(track.id)])
-            genres_label = ttk.Label(track_frame, text=genres_text)
-            genres_label.grid(row=0, column=3)
+            if genres_text == '':
+                genres_text = '-'
+            genres_label = ttk.Label(self.tracks_frame, text=genres_text, justify='center')
+            genres_label.grid(row=2 * i + 2, column=3)
 
             filename = self.session.get_audio_file(track.audio_id).filename
-            filename_label = ttk.Label(track_frame, text=filename)
-            filename_label.grid(row=0, column=4)
+            filename_label = ttk.Label(self.tracks_frame, text=filename)
+            filename_label.grid(row=2 * i + 2, column=4)
 
             if self.session.user is not None:
                 if self.session.user.is_admin:
-                    delete_button = ttk.Button(track_frame, text='Удалить',
+                    delete_button = ttk.Button(self.tracks_frame, image=self.app.delete_image,
                                                command=lambda track_id=track.id: self.delete_track(track_id))
-                    delete_button.grid(row=0, column=5, **self.padding)
+                    delete_button.grid(row=2 * i + 2, column=5)
 
-            track_frame.pack(side='top', fill='x', **self.padding)
+        # если пользователь администратор
+        # создание кнопки добавления композиции
+        if self.session.user is not None:
+            if self.session.user.is_admin:
+                self.add_track_button = ttk.Button(self, image=self.app.add_image,
+                                                   command=self.show_add_track_window)
+                self.add_track_button.pack(side='top', **self.padding)
 
     def show_add_track_window(self) -> None:
         """Отображение окна добавления композиции."""
@@ -120,7 +141,7 @@ class AddTrackWindow(tk.Toplevel):
 
         self.parent = parent
 
-        self.geometry('540x360')
+        self.geometry('540x420')
         self.title('Добавление альбома')
 
         self.rowconfigure(0, weight=2)

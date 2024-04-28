@@ -12,13 +12,14 @@ class AlbumFrame(ttk.Frame):
 
         super().__init__(container)
 
-        self.padding = {'padx': 10, 'pady': 10}
+        self.padding = {'padx': 10, 'pady': 20}
 
         self.app = container.app
         self.session = self.app.session
 
         self.add_album_button = None
         self.no_albums_label = None
+        self.albums_frame = None
 
     def update(self) -> None:
         """Обновление состояния виджета."""
@@ -27,14 +28,6 @@ class AlbumFrame(ttk.Frame):
         for child in self.winfo_children():
             child.destroy()
 
-        # если пользователь администратор
-        # создание кнопки добавления альбома
-        if self.session.user is not None:
-            if self.session.user.is_admin:
-                self.add_album_button = ttk.Button(self, text='Добавить альбом',
-                                                   command=self.show_add_album_window)
-                self.add_album_button.pack(side='top', **self.padding)
-
         # получение списка добавленных альбомов
         albums = self.session.get_all_albums()
 
@@ -42,32 +35,52 @@ class AlbumFrame(ttk.Frame):
             self.no_albums_label = ttk.Label(self, text='Пока не добавлено ни одного альбома',
                                              font='Helvetica 16')
             self.no_albums_label.pack(pady=(150, 0))
+        else:  # заполнение шапки таблицы
+            self.albums_frame = ttk.Frame(self)
 
-        # отображение списка альбомов
-        for album in albums:
-            album_frame = ttk.Frame(self)
+            self.albums_frame.columnconfigure(0, weight=2)
+            self.albums_frame.columnconfigure(1, weight=2)
+            self.albums_frame.columnconfigure(2, weight=2)
+            self.albums_frame.columnconfigure(3, weight=1)
 
-            album_frame.columnconfigure(0, weight=2)
-            album_frame.columnconfigure(1, weight=2)
-            album_frame.columnconfigure(2, weight=2)
-            album_frame.columnconfigure(3, weight=1)
-
-            name_label = ttk.Label(album_frame, text=album.name)
+            name_label = ttk.Label(self.albums_frame, text='Название', font=self.app.HEADER_FONT)
             name_label.grid(row=0, column=0)
 
-            release_date_label = ttk.Label(album_frame, text=album.release_date)
+            release_date_label = ttk.Label(self.albums_frame, text='Дата выхода', font=self.app.HEADER_FONT)
             release_date_label.grid(row=0, column=1)
 
-            artist_name_label = ttk.Label(album_frame, text=self.session.get_artist(album.artist_id).name)
+            artist_name_label = ttk.Label(self.albums_frame, text='Исполнитель', font=self.app.HEADER_FONT)
             artist_name_label.grid(row=0, column=2)
+
+            self.albums_frame.pack(side='top', fill='x', **self.padding)
+
+        # отображение списка альбомов
+        for i, album in enumerate(albums):
+            separator = ttk.Separator(self.albums_frame, orient='horizontal')
+            separator.grid(row=2 * i + 1, column=0, columnspan=4, sticky='nsew', pady=10)
+
+            name_label = ttk.Label(self.albums_frame, text=album.name)
+            name_label.grid(row=2 * i + 2, column=0)
+
+            release_date_label = ttk.Label(self.albums_frame, text=album.release_date.strftime('%d-%m-%Y'))
+            release_date_label.grid(row=2 * i + 2, column=1)
+
+            artist_name_label = ttk.Label(self.albums_frame, text=self.session.get_artist(album.artist_id).name)
+            artist_name_label.grid(row=2 * i + 2, column=2)
 
             if self.session.user is not None:
                 if self.session.user.is_admin:
-                    delete_button = ttk.Button(album_frame, text='Удалить',
+                    delete_button = ttk.Button(self.albums_frame, image=self.app.delete_image,
                                                command=lambda album_id=album.id: self.delete_album(album_id))
-                    delete_button.grid(row=0, column=3, **self.padding)
+                    delete_button.grid(row=2 * i + 2, column=3)
 
-            album_frame.pack(side='top', fill='x', **self.padding)
+        # если пользователь администратор
+        # создание кнопки добавления альбома
+        if self.session.user is not None:
+            if self.session.user.is_admin:
+                self.add_album_button = ttk.Button(self, image=self.app.add_image,
+                                                   command=self.show_add_album_window)
+                self.add_album_button.pack(side='top', **self.padding)
 
     def show_add_album_window(self) -> None:
         """Отображение окна добавления альбома."""
@@ -130,7 +143,7 @@ class AddAlbumWindow(tk.Toplevel):
         self.release_date_label = ttk.Label(self, text='Дата выхода:')
         self.release_date_label.grid(row=1, column=0, **padding)
 
-        self.release_date_entry = DateEntry(self, font=self.parent.app.FONT, width=10)
+        self.release_date_entry = DateEntry(self, date_pattern='dd/mm/y', font=self.parent.app.FONT, width=10)
         self.release_date_entry.grid(row=1, column=1, **padding)
 
         self.artist_name_label = ttk.Label(self, text='Исполнитель:')

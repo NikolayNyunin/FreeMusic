@@ -15,7 +15,7 @@ class MainFrame(ttk.Frame):
 
         super().__init__(container)
 
-        padding = {'padx': 10, 'pady': 10}
+        padding = {'padx': 10, 'pady': 20}
 
         self.app = container
 
@@ -29,25 +29,25 @@ class MainFrame(ttk.Frame):
         self.columnconfigure(4, weight=4)
         self.columnconfigure(5, weight=1)
 
-        self.tracks_button = ttk.Button(self, text='Композиции', command=self.show_tracks)
+        self.tracks_button = ttk.Button(self, text='Композиции', padding=(10, 10), command=self.show_tracks)
         self.tracks_button.grid(row=0, column=0, **padding)
 
-        self.albums_button = ttk.Button(self, text='Альбомы', command=self.show_albums)
+        self.albums_button = ttk.Button(self, text='Альбомы', padding=(10, 10), command=self.show_albums)
         self.albums_button.grid(row=0, column=1, **padding)
 
-        self.artists_button = ttk.Button(self, text='Исполнители', command=self.show_artists)
+        self.artists_button = ttk.Button(self, text='Исполнители', padding=(10, 10), command=self.show_artists)
         self.artists_button.grid(row=0, column=2, **padding)
 
-        self.genres_button = ttk.Button(self, text='Жанры', command=self.show_genres)
+        self.genres_button = ttk.Button(self, text='Жанры', padding=(10, 10), command=self.show_genres)
         self.genres_button.grid(row=0, column=3, **padding)
 
-        self.account_button = ttk.Button(self, text='Аккаунт', command=self.show_account)
+        self.account_button = ttk.Button(self, text='Аккаунт', padding=(10, 10), command=self.show_account)
         self.account_button.grid(row=0, column=4, sticky='e', **padding)
 
         self.menu_buttons = [self.tracks_button, self.albums_button, self.artists_button,
                              self.genres_button, self.account_button]
 
-        self.log_out_button = ttk.Button(self, text='Выйти', command=self.log_out)
+        self.log_out_button = ttk.Button(self, text='Выйти', padding=(10, 10), command=self.log_out)
         self.log_out_button.grid(row=0, column=5, sticky='w', **padding)
 
         self.track_frame = TrackFrame(self)

@@ -11,13 +11,14 @@ class GenreFrame(ttk.Frame):
 
         super().__init__(container)
 
-        self.padding = {'padx': 10, 'pady': 10}
+        self.padding = {'padx': 10, 'pady': 20}
 
         self.app = container.app
         self.session = self.app.session
 
         self.add_genre_button = None
         self.no_genres_label = None
+        self.genres_frame = None
 
     def update(self) -> None:
         """Обновление состояния виджета."""
@@ -26,14 +27,6 @@ class GenreFrame(ttk.Frame):
         for child in self.winfo_children():
             child.destroy()
 
-        # если пользователь администратор
-        # создание кнопки добавления жанра
-        if self.session.user is not None:
-            if self.session.user.is_admin:
-                self.add_genre_button = ttk.Button(self, text='Добавить жанр',
-                                                   command=self.show_add_genre_window)
-                self.add_genre_button.pack(side='top', **self.padding)
-
         # получение списка добавленных жанров
         genres = self.session.get_all_genres()
 
@@ -41,24 +34,38 @@ class GenreFrame(ttk.Frame):
             self.no_genres_label = ttk.Label(self, text='Пока не добавлено ни одного жанра',
                                              font='Helvetica 16')
             self.no_genres_label.pack(pady=(150, 0))
+        else:  # заполнение шапки таблицы
+            self.genres_frame = ttk.Frame(self)
+
+            self.genres_frame.columnconfigure(0, weight=2)
+            self.genres_frame.columnconfigure(1, weight=1)
+
+            name_label = ttk.Label(self.genres_frame, text='Название', font=self.app.HEADER_FONT)
+            name_label.grid(row=0, column=0)
+
+            self.genres_frame.pack(side='top', fill='x', **self.padding)
 
         # отображение списка жанров
-        for genre in genres:
-            genre_frame = ttk.Frame(self)
+        for i, genre in enumerate(genres):
+            separator = ttk.Separator(self.genres_frame, orient='horizontal')
+            separator.grid(row=2 * i + 1, column=0, columnspan=2, sticky='nsew', pady=10)
 
-            genre_frame.columnconfigure(0, weight=2)
-            genre_frame.columnconfigure(1, weight=1)
-
-            name_label = ttk.Label(genre_frame, text=genre.name)
-            name_label.grid(row=0, column=0, **self.padding)
+            name_label = ttk.Label(self.genres_frame, text=genre.name)
+            name_label.grid(row=2 * i + 2, column=0)
 
             if self.session.user is not None:
                 if self.session.user.is_admin:
-                    delete_button = ttk.Button(genre_frame, text='Удалить',
+                    delete_button = ttk.Button(self.genres_frame, image=self.app.delete_image,
                                                command=lambda genre_id=genre.id: self.delete_genre(genre_id))
-                    delete_button.grid(row=0, column=1, **self.padding)
+                    delete_button.grid(row=2 * i + 2, column=1)
 
-            genre_frame.pack(side='top', **self.padding)
+        # если пользователь администратор
+        # создание кнопки добавления жанра
+        if self.session.user is not None:
+            if self.session.user.is_admin:
+                self.add_genre_button = ttk.Button(self, image=self.app.add_image,
+                                                   command=self.show_add_genre_window)
+                self.add_genre_button.pack(side='top', **self.padding)
 
     def show_add_genre_window(self) -> None:
         """Отображение окна добавления жанра."""

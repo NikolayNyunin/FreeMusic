@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from PIL import Image, ImageTk
 
 from session import MusicSession
 from gui.login_frame import LoginFrame
@@ -11,6 +12,7 @@ class App(tk.Tk):
     """Основной класс приложения."""
 
     FONT = 'Helvetica 12'
+    HEADER_FONT = 'Helvetica 14 bold'
 
     def __init__(self):
         """Инициализация основного окна приложения."""
@@ -25,6 +27,12 @@ class App(tk.Tk):
         self.columnconfigure(0, weight=1)
 
         self.session = MusicSession()
+
+        add_image = Image.open('img/add.png')
+        self.add_image = ImageTk.PhotoImage(add_image.resize((60, 60)))
+
+        delete_image = Image.open('img/delete.png')
+        self.delete_image = ImageTk.PhotoImage(delete_image.resize((40, 40)))
 
         self.login_frame = LoginFrame(self)
         self.login_frame.grid(row=0, column=0, sticky='nsew')
