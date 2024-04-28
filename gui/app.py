@@ -28,6 +28,12 @@ class App(tk.Tk):
 
         self.session = MusicSession()
 
+        account_image = Image.open('img/account.png')
+        self.account_image = ImageTk.PhotoImage(account_image.resize((40, 40)))
+
+        logout_image = Image.open('img/logout.png')
+        self.logout_image = ImageTk.PhotoImage(logout_image.resize((40, 40)))
+
         add_image = Image.open('img/add.png')
         self.add_image = ImageTk.PhotoImage(add_image.resize((60, 60)))
 

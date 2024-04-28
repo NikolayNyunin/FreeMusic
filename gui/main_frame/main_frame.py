@@ -32,22 +32,22 @@ class MainFrame(ttk.Frame):
         self.tracks_button = ttk.Button(self, text='Композиции', padding=(10, 10), command=self.show_tracks)
         self.tracks_button.grid(row=0, column=0, **padding)
 
-        self.albums_button = ttk.Button(self, text='Альбомы', padding=(10, 10), command=self.show_albums)
-        self.albums_button.grid(row=0, column=1, **padding)
-
         self.artists_button = ttk.Button(self, text='Исполнители', padding=(10, 10), command=self.show_artists)
-        self.artists_button.grid(row=0, column=2, **padding)
+        self.artists_button.grid(row=0, column=1, **padding)
+
+        self.albums_button = ttk.Button(self, text='Альбомы', padding=(10, 10), command=self.show_albums)
+        self.albums_button.grid(row=0, column=2, **padding)
 
         self.genres_button = ttk.Button(self, text='Жанры', padding=(10, 10), command=self.show_genres)
         self.genres_button.grid(row=0, column=3, **padding)
 
-        self.account_button = ttk.Button(self, text='Аккаунт', padding=(10, 10), command=self.show_account)
+        self.account_button = ttk.Button(self, text='Аккаунт', image=self.app.account_image, command=self.show_account)
         self.account_button.grid(row=0, column=4, sticky='e', **padding)
 
-        self.menu_buttons = [self.tracks_button, self.albums_button, self.artists_button,
+        self.menu_buttons = [self.tracks_button, self.artists_button, self.albums_button,
                              self.genres_button, self.account_button]
 
-        self.log_out_button = ttk.Button(self, text='Выйти', padding=(10, 10), command=self.log_out)
+        self.log_out_button = ttk.Button(self, text='Выйти', image=self.app.logout_image, command=self.log_out)
         self.log_out_button.grid(row=0, column=5, sticky='w', **padding)
 
         self.track_frame = TrackFrame(self)
@@ -89,19 +89,6 @@ class MainFrame(ttk.Frame):
         self.track_frame.update()
         self.track_frame.tkraise()
 
-    def show_albums(self) -> None:
-        """Отображение списка альбомов."""
-
-        # включение всех кнопок меню
-        self.enable_menu_buttons()
-
-        # выключение нажатой кнопки
-        self.albums_button.configure(state='disabled')
-
-        # обновление и отображение виджета списка альбомов
-        self.album_frame.update()
-        self.album_frame.tkraise()
-
     def show_artists(self) -> None:
         """Отображение списка исполнителей."""
 
@@ -114,6 +101,19 @@ class MainFrame(ttk.Frame):
         # обновление и отображение виджета списка исполнителей
         self.artist_frame.update()
         self.artist_frame.tkraise()
+
+    def show_albums(self) -> None:
+        """Отображение списка альбомов."""
+
+        # включение всех кнопок меню
+        self.enable_menu_buttons()
+
+        # выключение нажатой кнопки
+        self.albums_button.configure(state='disabled')
+
+        # обновление и отображение виджета списка альбомов
+        self.album_frame.update()
+        self.album_frame.tkraise()
 
     def show_genres(self) -> None:
         """Отображение списка жанров."""
